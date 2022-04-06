@@ -144,37 +144,28 @@ def encrypt(hash, e, n):
 def checkInputAndExecute(mode, message, modulus, signature):
     # sign mode: // TODO get rid of spaces on input
     if isModeSign(mode):
-        print("--MODE:", mode, "MESSAGE:", message)
         hash = elfHash(message)  # message is hashed
-        print("message hash", hex(hash))
-        #  p = genPrime()  # generate primes
-        p = 0x9da5
-        q = 0xb28b
-        print("p : ", hex(p))
-        # q = genPrime()
-        print("q : ", hex(q))
+        p = genPrime()  # generate primes
+        q = genPrime()
         n = genModulus(p, q)
-        print("n Modulus : ", hex(n))
-        totient = (p - 1) * (q - 1)
-        print("t : ", hex(totient))
-        print("message hash : ", hex(hash))
-        e = genKeysXGCD(publicKey, totient)
-        print("e(private key) : ", hex(e))
+        t = (p - 1) * (q - 1)
+        e = genKeysXGCD(publicKey, t) # generate the key based on PK and T
         en = encrypt(hash, e, n)
+        print("p : ", hex(p), "q : ", hex(q), "n :", hex(n), "t :", hex(t))
+        print("message hashed : ", hex(hash))
+        print(" signing with e(private key) : ", hex(e))
         print("Signature : ", hex(en))
+        print("complete output for verification:")
+        print(hex(n),message,hex(en))
 
     # verify mode:
     if isModeVerify(mode):
-        print("--MODE:", mode, "MODULUS:", modulus, "MESSAGE:", message, "SIGNATURE:", signature)
         verifySignature(int(modulus, 16), message, int(signature, 16))
 
 
 def verifySignature(modulus, message, signature):
     hash = elfHash(message)
-    print("hashed :", hex(hash))
-    print("message hash : ", hex(hash), "public key: ", hex(publicKey), "modulus : ", hex(modulus))
     de = encrypt(signature, publicKey, modulus)
-    print("decrypted : ", hex(de))
     if de == hash:
         print("!!! message is verified !!!")
         return True
