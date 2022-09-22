@@ -1,2 +1,2 @@
 # RSA
-Simplified RSA Encryption done in python.
+Simplified RSA Encryption in python.
